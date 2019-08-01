@@ -37,13 +37,6 @@ public class ContentView extends AbstractView <JScrollPane, LibraryModel> implem
          */
         private static final long serialVersionUID = 1L;
 
-        /**
-         * Initializing.
-         */
-        {
-            setColumnIdentifiers(new String[]{getString("TABLE_COLUMN_ARTIST"), getString("TABLE_COLUMN_TITLE"), getString("TABLE_COLUMN_GENRE"), "UUID"});
-        }
-
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
@@ -136,6 +129,7 @@ public class ContentView extends AbstractView <JScrollPane, LibraryModel> implem
         this.setLibraryController(libraryController);
         this.setPlayerController(playerController);
         this.initialize();
+        this.setLayoutPosition(BorderLayout.CENTER);
         this.getLibraryController().addDirectoryContent(new File("Music"));
     }
 
@@ -143,24 +137,27 @@ public class ContentView extends AbstractView <JScrollPane, LibraryModel> implem
      * Initializing.
      */
     protected void initialize() {
-        this.setCoreComponent(new JScrollPane());
-        JTable table = new JTable(this.getTableContent());
+        // Prepare table content.
+        DefaultTableModel tableContent = this.getTableContent();
+        tableContent.setColumnIdentifiers(new String[]{getString("TABLE_COLUMN_ARTIST"), getString("TABLE_COLUMN_TITLE"), getString("TABLE_COLUMN_GENRE"), "UUID"});
+        // Prepare table.
+        JTable table = new JTable(tableContent);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(this);
+        this.hideColumn(table, 3); // Hides UUID.
         this.setTable(table);
-        this.hideColumn(3); // Hides UUID.
-        this.getCoreComponent().setViewportView(table);
-        this.setLayoutPosition(BorderLayout.CENTER);
+        this.setCoreComponent(new JScrollPane(table));
     }
 
     /**
-     * Hide column.
+     * Hide table column.
+     * @param table Table instance.
      * @param columnIndex Column index.
      */
-    protected void hideColumn(int columnIndex) {
-        this.getTable().getColumnModel().getColumn(columnIndex).setMinWidth(0);
-        this.getTable().getColumnModel().getColumn(columnIndex).setPreferredWidth(0);
-        this.getTable().getColumnModel().getColumn(columnIndex).setMaxWidth(0);
+    protected void hideColumn(JTable table, int columnIndex) {
+        table.getColumnModel().getColumn(columnIndex).setMinWidth(0);
+        table.getColumnModel().getColumn(columnIndex).setPreferredWidth(0);
+        table.getColumnModel().getColumn(columnIndex).setMaxWidth(0);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ene.views;
 
+import javax.swing.plaf.metal.MetalSliderUI;
 import ene.controllers.PlayerController;
 import ene.interfaces.Controller;
 import ene.interfaces.Localization;
@@ -10,25 +11,13 @@ import java.awt.BorderLayout;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.LineEvent.Type;
-import javax.sound.sampled.LineEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
-
-import java.util.Date;
-import ene.interfaces.Controller;
-import ene.interfaces.Model;
-import ene.views.AbstractView;
-import javax.sound.sampled.LineEvent.Type;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -111,7 +100,13 @@ public class PlayerView extends AbstractView <JPanel, PlayerModel> implements Lo
         });
         panel.add(this.playButton, BorderLayout.WEST);
         // Progress slider.
-        this.progressSlider = new JSlider(0, 100, 0);
+        JSlider slider = this.progressSlider = new JSlider(0, 100, 0);
+        this.progressSlider.setUI(new MetalSliderUI() {
+            @Override
+            protected void scrollDueToClickInTrack(int direction) {
+                slider.setValue(this.valueForXPosition(slider.getMousePosition().x));
+            }
+        });
         this.progressSlider.addChangeListener(event -> {
             this.getPlayerController().changeTrackPosition(progressSlider.getValue());
         });
